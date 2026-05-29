@@ -15,6 +15,26 @@ android {
         versionName "1.0"
     }
 
+    // 고정 서명 키 — 모든 빌드를 같은 키로 서명해야 기존 설치본 위에 덮어쓰기(업데이트)가 된다.
+    // 키가 매 빌드마다 달라지면 "기존 패키지와 충돌" 로 설치가 막힌다.
+    signingConfigs {
+        common {
+            storeFile file('rtklora.jks')
+            storePassword 'rtklora'
+            keyAlias 'rtklora'
+            keyPassword 'rtklora'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.common
+        }
+        release {
+            signingConfig signingConfigs.common
+        }
+    }
+
     buildFeatures {
         compose true
     }
