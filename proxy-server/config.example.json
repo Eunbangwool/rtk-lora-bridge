@@ -3,9 +3,9 @@
   "listen_port": 2101,
   "db_path": "customers.db",
   "upstream": {
-    "host": "ntrip.lguplus.com",
+    "host": "3.34.9.182",
     "port": 2101,
-    "mountpoint": "VRS-RTCM32"
+    "mountpoint": "RTK_MSM4_RTCM32"
   },
   "lgu_accounts": [
     { "id": "lguid_001", "pw": "lgupw_001" },

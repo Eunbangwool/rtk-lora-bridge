@@ -24,19 +24,26 @@ LG U+ RTK 계정을 풀링해서 다수의 농기계(NTRIP 클라이언트)에 �
 | `ntrip_proxy.service` | systemd 유닛 |
 | `requirements.txt` | 의존성 (표준 라이브러리만 사용 → 비어 있음) |
 
-## VRS(네트워크 RTK) 지원
+## 마운트포인트 / GGA (단일기준국 vs VRS)
 
-LG U+는 VRS 방식이라 로버의 현재 위치(GGA 문장)를 캐스터로 올려야 그 위치에 맞는 보정 데이터가 내려옵니다. 이 프록시는 **양방향 중계**를 합니다.
+LG U+ 서버: `3.34.9.182:2101`
 
-- 상류 → 농기계: RTCM 보정 데이터
-- 농기계 → 상류: GGA/NMEA 위치 (초기 `Ntrip-GGA` 헤더 + 접속 중 주기적으로 보내는 GGA 모두 전달)
+- **권장: `RTK_MSM4_RTCM32`** — 단일기준국 방식. **GGA 전송 불필요**, LoRa 단방향 호환. 본 프로젝트 기본값.
+- `iMAX_RTCM3.x(MSM4)` 같은 VRS 마운트포인트는 로버 위치(GGA)를 올려야 보정이 내려옵니다.
+
+이 프록시는 **양방향 중계**라 두 방식 모두 지원합니다.
+
+- 상류 → 농기계: RTCM 보정 데이터 (항상)
+- 농기계 → 상류: GGA/NMEA 위치 (초기 `Ntrip-GGA` 헤더 + 접속 중 주기 GGA 전달)
+  - 단일기준국 마운트포인트에서는 로버가 GGA를 보내지 않으므로 이 경로는 자연히 비활성 — **무해**합니다.
 
 ## 설정
 
 ```bash
 cp config.example.json config.json
 # config.json 편집:
-#  - upstream.mountpoint : LG U+ 마운트포인트 (예: VRS-RTCM32)
+#  - upstream.host       : LG U+ 서버 (3.34.9.182)
+#  - upstream.mountpoint : LG U+ 마운트포인트 (권장 RTK_MSM4_RTCM32)
 #  - lgu_accounts        : 보유한 LG U+ 계정 전부 추가
 ```
 
