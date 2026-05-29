@@ -1,9 +1,14 @@
 package com.rtklorabridge
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,13 +26,32 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: RtkViewModel by viewModels()
 
+    private val notificationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            // 권한 허용 여부와 관계없이 서비스 시작 시도
+            viewModel.startService()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 앱 시작 시 서비스 자동 실행
-        viewModel.startService()
 
         setContent {
             RtkBridgeScreen(viewModel)
+        }
+
+        // 앱 시작 시 알림 권한 요청 후 서비스 자동 실행
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                viewModel.startService()
+            } else {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            viewModel.startService()
         }
     }
 }
