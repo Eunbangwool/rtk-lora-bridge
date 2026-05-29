@@ -1,0 +1,14 @@
+{
+  "listen_host": "0.0.0.0",
+  "listen_port": 2101,
+  "db_path": "customers.db",
+  "upstream": {
+    "host": "ntrip.lguplus.com",
+    "port": 2101,
+    "mountpoint": "VRS-RTCM32"
+  },
+  "lgu_accounts": [
+    { "id": "lguid_001", "pw": "lgupw_001" },
+    { "id": "lguid_002", "pw": "lgupw_002" }
+  ]
+}

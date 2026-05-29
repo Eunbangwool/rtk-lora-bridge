@@ -1,0 +1,15 @@
+[Unit]
+Description=NTRIP Proxy Server (RTK 계정 풀링)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/ntrip_proxy
+Environment=NTRIP_PROXY_CONFIG=/home/ubuntu/ntrip_proxy/config.json
+ExecStart=/usr/bin/python3 /home/ubuntu/ntrip_proxy/server.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
