@@ -1,0 +1,12 @@
+*.iml
+.gradle
+local.properties
+.idea
+.DS_Store
+build/
+captures/
+.externalNativeBuild
+.cxx
+release_body.md
+build.log
+RtkLoRaBridge.apk
