@@ -10,3 +10,10 @@ captures/
 release_body.md
 build.log
 RtkLoRaBridge.apk
+
+# proxy-server 비밀정보/런타임 파일
+proxy-server/config.json
+proxy-server/customers.db
+proxy-server/*.db
+__pycache__/
+*.pyc

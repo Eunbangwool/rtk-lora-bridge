@@ -1,0 +1,6 @@
+# NTRIP 프록시 서버는 Python 3.11 표준 라이브러리만 사용합니다.
+# (asyncio, sqlite3, hashlib, base64, json, logging)
+# 추가 설치할 서드파티 패키지가 없습니다.
+#
+# PostgreSQL 등으로 확장 시 여기에 의존성을 추가하세요. 예:
+# asyncpg>=0.29
