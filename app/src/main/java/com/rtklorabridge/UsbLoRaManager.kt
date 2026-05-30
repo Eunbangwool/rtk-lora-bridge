@@ -11,12 +11,23 @@ class UsbLoRaManager(private val context: Context) {
 
     private var port: UsbSerialPort? = null
     private var readJob: Job? = null
+    private val rtcmFilter = RtcmFilter()
 
     val isConnected = MutableStateFlow(false)
     val bytesPerSec = MutableStateFlow(0)
 
+    /** 현재 lock 된 RTCM 기준국 ID (없으면 null). */
+    val lockedStationId get() = rtcmFilter.lockedStationId
+
+    /** 다른 기지국 신호로 폐기된 프레임 수. */
+    val droppedOtherStation get() = rtcmFilter.droppedOtherStation
+
+    /** CRC 불일치(손상/충돌)로 폐기된 프레임 수. */
+    val droppedCrc get() = rtcmFilter.droppedCrc
+
     fun connect(): Boolean {
         return try {
+            rtcmFilter.reset()
             val manager = context.getSystemService(Context.USB_SERVICE) as UsbManager
             val drivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
             if (drivers.isEmpty()) return false
@@ -47,8 +58,11 @@ class UsbLoRaManager(private val context: Context) {
                 try {
                     val len = port?.read(buffer, 100) ?: break
                     if (len > 0) {
-                        onData(buffer.copyOf(len))
-                        byteCount += len
+                        // 원시 바이트를 RTCM 필터에 넣어, CRC 유효 + 단일 기준국 프레임만 전달
+                        rtcmFilter.push(buffer.copyOf(len)) { frame ->
+                            onData(frame)
+                            byteCount += frame.size
+                        }
 
                         val now = System.currentTimeMillis()
                         if (now - lastSecond >= 1000) {
