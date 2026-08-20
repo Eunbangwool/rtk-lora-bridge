@@ -4,27 +4,23 @@ import android.app.Application
 import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class RtkViewModel(app: Application) : AndroidViewModel(app) {
 
-    private val lora = UsbLoRaManager(app)
-    private val caster = NtripCaster(2101)
-
-    val isConnected: StateFlow<Boolean> = lora.isConnected
-    val bytesPerSec: StateFlow<Int> = lora.bytesPerSec
-    val clientCount: StateFlow<Int> = caster.clientCount
-
-    private val _serviceRunning = MutableStateFlow(false)
-    val serviceRunning: StateFlow<Boolean> = _serviceRunning
+    // 실제 구동 중인 서비스(RtkService)의 상태를 공유 홀더(RtkState)에서 관찰
+    val isConnected: StateFlow<Boolean> = RtkState.isConnected
+    val bytesPerSec: StateFlow<Int> = RtkState.bytesPerSec
+    val clientCount: StateFlow<Int> = RtkState.clientCount
+    val serviceRunning: StateFlow<Boolean> = RtkState.serviceRunning
+    val stationId: StateFlow<Int?> = RtkState.stationId
+    val droppedOtherStation: StateFlow<Int> = RtkState.droppedOtherStation
+    val droppedCrc: StateFlow<Int> = RtkState.droppedCrc
 
     fun startService() {
         val intent = Intent(getApplication(), RtkService::class.java)
         ContextCompat.startForegroundService(getApplication(), intent)
-        _serviceRunning.value = true
+        RtkState.serviceRunning.value = true   // 즉시 반영(서비스가 곧 확정)
     }
 
     fun stopService() {
@@ -32,6 +28,6 @@ class RtkViewModel(app: Application) : AndroidViewModel(app) {
             action = RtkService.ACTION_STOP
         }
         getApplication<Application>().startService(intent)
-        _serviceRunning.value = false
+        RtkState.serviceRunning.value = false
     }
 }

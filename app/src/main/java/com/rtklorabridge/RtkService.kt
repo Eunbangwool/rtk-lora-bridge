@@ -54,16 +54,20 @@ class RtkService : Service() {
             return START_NOT_STICKY
         }
         caster.start(scope)
+        RtkState.serviceRunning.value = true
+        publishState()
 
         if (lora.connect()) {
             lora.startReading(scope) { data ->
                 caster.broadcast(data)
             }
-            // 상태 모니터링
+            // 상태 모니터링 + 알림 갱신
             scope.launch {
                 lora.bytesPerSec.collect { bps ->
+                    val station = RtkState.stationId.value
+                    val stationText = if (station != null) " • 기준국 $station" else ""
                     updateNotification(
-                        if (bps > 0) "수신 중 • ${bps} bytes/s • 클라이언트 ${caster.clientCount.value}대"
+                        if (bps > 0) "수신 중 • ${bps} bytes/s • 클라이언트 ${caster.clientCount.value}대$stationText"
                         else "대기 중..."
                     )
                 }
@@ -75,10 +79,21 @@ class RtkService : Service() {
         return START_STICKY
     }
 
+    /** UsbLoRaManager/NtripCaster 의 상태 흐름을 공유 상태(RtkState)로 전달. */
+    private fun publishState() {
+        scope.launch { lora.isConnected.collect { RtkState.isConnected.value = it } }
+        scope.launch { lora.bytesPerSec.collect { RtkState.bytesPerSec.value = it } }
+        scope.launch { lora.lockedStationId.collect { RtkState.stationId.value = it } }
+        scope.launch { lora.droppedOtherStation.collect { RtkState.droppedOtherStation.value = it } }
+        scope.launch { lora.droppedCrc.collect { RtkState.droppedCrc.value = it } }
+        scope.launch { caster.clientCount.collect { RtkState.clientCount.value = it } }
+    }
+
     override fun onDestroy() {
         lora.disconnect()
         caster.stop()
         scope.cancel()
+        RtkState.onServiceStopped()
         super.onDestroy()
     }
 

@@ -1,0 +1,7 @@
+# RTK LoRa 기지국 브리지 의존성
+pyserial>=3.5
+
+# LoRa 모듈 M0/M1 자동 전환을 GPIO 로 하려면 보드에 맞는 라이브러리 설치:
+#   Orange Pi:  OPi.GPIO
+#   (호환)      RPi.GPIO
+# 수동으로 M0/M1 을 설정하면 필요 없음.

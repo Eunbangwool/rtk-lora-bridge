@@ -62,6 +62,7 @@ fun RtkBridgeScreen(viewModel: RtkViewModel) {
     val bytesPerSec by viewModel.bytesPerSec.collectAsState()
     val clientCount by viewModel.clientCount.collectAsState()
     val serviceRunning by viewModel.serviceRunning.collectAsState()
+    val stationId by viewModel.stationId.collectAsState()
 
     Column(
         modifier = Modifier
@@ -125,6 +126,8 @@ fun RtkBridgeScreen(viewModel: RtkViewModel) {
                 StatusRow("NTRIP 서버", "127.0.0.1:2101")
                 Divider(color = Color(0xFF374151), modifier = Modifier.padding(vertical = 8.dp))
                 StatusRow("LoRa 수신기", if (isConnected) "연결됨 ✅" else "연결 안됨 ❌")
+                Divider(color = Color(0xFF374151), modifier = Modifier.padding(vertical = 8.dp))
+                StatusRow("기준국 ID", stationId?.toString() ?: "-")
                 Divider(color = Color(0xFF374151), modifier = Modifier.padding(vertical = 8.dp))
                 StatusRow("수신 속도", "${bytesPerSec} bytes/s")
                 Divider(color = Color(0xFF374151), modifier = Modifier.padding(vertical = 8.dp))

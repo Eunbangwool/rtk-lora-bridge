@@ -1,0 +1,15 @@
+[Unit]
+Description=RTK LoRa Base Station Bridge (UM980 -> LoRa)
+After=network.target
+
+[Service]
+Type=simple
+User=orangepi
+WorkingDirectory=/home/orangepi/base-station
+Environment=BASE_STATION_CONFIG=/home/orangepi/base-station/config.json
+ExecStart=/usr/bin/python3 /home/orangepi/base-station/base_station.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
