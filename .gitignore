@@ -15,5 +15,9 @@ RtkLoRaBridge.apk
 proxy-server/config.json
 proxy-server/customers.db
 proxy-server/*.db
+
+# base-station 런타임 설정
+base-station/config.json
+
 __pycache__/
 *.pyc

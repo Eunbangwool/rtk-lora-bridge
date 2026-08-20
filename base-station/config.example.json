@@ -1,0 +1,45 @@
+{
+  "station_id": 1,
+  "rewrite_station_id": true,
+
+  "source": {
+    "port": "/dev/ttyS1",
+    "baud": 115200
+  },
+  "lora": {
+    "port": "/dev/ttyS0",
+    "baud": 115200
+  },
+
+  "rtcm_message_types": [1005, 1074, 1084, 1094, 1124, 1033, 1230],
+  "max_bytes_per_sec": 0,
+  "stats_interval_sec": 10,
+
+  "configure_um980": false,
+  "um980": {
+    "mode": "survey",
+    "survey_sec": 60,
+    "survey_h_acc": 1.5,
+    "survey_v_acc": 2.5,
+    "rtcm_messages": {
+      "RTCM1005": 1, "RTCM1074": 1, "RTCM1084": 1,
+      "RTCM1094": 1, "RTCM1124": 1, "RTCM1033": 10, "RTCM1230": 10
+    },
+    "saveconfig": true
+  },
+
+  "configure_lora": false,
+  "lora_settings": {
+    "channel": 70,
+    "address": 0,
+    "netid": 0,
+    "uart_baud": 115200,
+    "air_rate": 9600,
+    "subpacket": 240,
+    "power_dbm": 30,
+    "power_series": 30,
+    "fixed_transmission": false,
+    "lbt": false,
+    "gpio": { "m0": 0, "m1": 0 }
+  }
+}
